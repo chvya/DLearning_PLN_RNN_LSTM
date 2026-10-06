@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.conllu -text
+*.pdf binary
+*.pt binary
+*.npz binary
+*.png binary

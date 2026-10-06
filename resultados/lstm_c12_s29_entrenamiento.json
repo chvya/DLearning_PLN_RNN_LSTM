@@ -1,0 +1,26 @@
+{
+  "config": {
+    "kind": "lstm",
+    "seed": 29,
+    "context": 12,
+    "epochs": 5,
+    "embedding": 48,
+    "hidden": 64,
+    "vocab_size": 3000,
+    "batch_size": 512,
+    "learning_rate": 0.003,
+    "dropout": 0.15,
+    "clip_norm": 1.0,
+    "train_n": 100000,
+    "torch": "2.14.0+cpu",
+    "numpy": "2.5.3",
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 10, GenuineIntel",
+    "threads": 2,
+    "piloto": false
+  },
+  "parametros": 368184,
+  "segundos_entrenamiento": 112.74736029999985,
+  "mejor_val_nll": 4.338759762381838
+}

@@ -1,0 +1,34 @@
+{
+  "vocabulario": 3000,
+  "duplicados_excluidos": 62,
+  "regla_particion": "SHA256 grupo5-v1:documento, intervalos 80/10/10",
+  "contexto_maximo": 24,
+  "max_train": 100000,
+  "particiones": {
+    "train": {
+      "documentos": 1268,
+      "oraciones": 13380,
+      "palabras_totales": 372317,
+      "objetivos_usados": 100000,
+      "oov_objetivos": 19849,
+      "tasa_oov": 0.19849
+    },
+    "val": {
+      "documentos": 173,
+      "oraciones": 1971,
+      "palabras_totales": 52695,
+      "objetivos_usados": 52695,
+      "oov_objetivos": 11115,
+      "tasa_oov": 0.21093082835183605
+    },
+    "test": {
+      "documentos": 194,
+      "oraciones": 2248,
+      "palabras_totales": 56796,
+      "objetivos_usados": 56796,
+      "oov_objetivos": 12033,
+      "tasa_oov": 0.2118635115148954
+    }
+  },
+  "sin_documentos_compartidos": true
+}

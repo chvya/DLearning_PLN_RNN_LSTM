@@ -1,0 +1,171 @@
+[
+  {
+    "modelo": "lstm_c12_s29.pt",
+    "entrada": "",
+    "tokens": [],
+    "desconocidas": [],
+    "masa_unk": 0.10949715971946716,
+    "sugerencias": [
+      {
+        "palabra": "el",
+        "probabilidad": 0.14214684069156647
+      },
+      {
+        "palabra": "la",
+        "probabilidad": 0.1078416183590889
+      },
+      {
+        "palabra": "en",
+        "probabilidad": 0.06004342809319496
+      },
+      {
+        "palabra": "los",
+        "probabilidad": 0.04019627347588539
+      },
+      {
+        "palabra": "pero",
+        "probabilidad": 0.018750803545117378
+      }
+    ]
+  },
+  {
+    "modelo": "lstm_c12_s29.pt",
+    "entrada": "el presidente del gobierno",
+    "tokens": [
+      "el",
+      "presidente",
+      "del",
+      "gobierno"
+    ],
+    "desconocidas": [],
+    "masa_unk": 0.10607203841209412,
+    "sugerencias": [
+      {
+        "palabra": "de",
+        "probabilidad": 0.1377037763595581
+      },
+      {
+        "palabra": "del",
+        "probabilidad": 0.07350219786167145
+      },
+      {
+        "palabra": "vasco",
+        "probabilidad": 0.03004181571304798
+      },
+      {
+        "palabra": "es",
+        "probabilidad": 0.019707348197698593
+      },
+      {
+        "palabra": "se",
+        "probabilidad": 0.019672054797410965
+      }
+    ]
+  },
+  {
+    "modelo": "lstm_c12_s29.pt",
+    "entrada": "la universidad de",
+    "tokens": [
+      "la",
+      "universidad",
+      "de"
+    ],
+    "desconocidas": [],
+    "masa_unk": 0.2002456784248352,
+    "sugerencias": [
+      {
+        "palabra": "la",
+        "probabilidad": 0.10743574053049088
+      },
+      {
+        "palabra": "los",
+        "probabilidad": 0.05289080739021301
+      },
+      {
+        "palabra": "<num>",
+        "probabilidad": 0.03340919688344002
+      },
+      {
+        "palabra": "las",
+        "probabilidad": 0.029106544330716133
+      },
+      {
+        "palabra": "que",
+        "probabilidad": 0.025039825588464737
+      }
+    ]
+  },
+  {
+    "modelo": "lstm_c12_s29.pt",
+    "entrada": "los estudiantes de software",
+    "tokens": [
+      "los",
+      "estudiantes",
+      "de",
+      "software"
+    ],
+    "desconocidas": [
+      "software"
+    ],
+    "masa_unk": 0.2204591929912567,
+    "sugerencias": [
+      {
+        "palabra": "de",
+        "probabilidad": 0.075251504778862
+      },
+      {
+        "palabra": "y",
+        "probabilidad": 0.06989234685897827
+      },
+      {
+        "palabra": "en",
+        "probabilidad": 0.04731602221727371
+      },
+      {
+        "palabra": "que",
+        "probabilidad": 0.0378902405500412
+      },
+      {
+        "palabra": "la",
+        "probabilidad": 0.033247724175453186
+      }
+    ]
+  },
+  {
+    "modelo": "lstm_c12_s29.pt",
+    "entrada": "Riobamba ESPOCH Chimborazo",
+    "tokens": [
+      "riobamba",
+      "espoch",
+      "chimborazo"
+    ],
+    "desconocidas": [
+      "riobamba",
+      "espoch",
+      "chimborazo"
+    ],
+    "masa_unk": 0.2464035302400589,
+    "sugerencias": [
+      {
+        "palabra": "de",
+        "probabilidad": 0.05074459686875343
+      },
+      {
+        "palabra": "que",
+        "probabilidad": 0.04768214002251625
+      },
+      {
+        "palabra": "en",
+        "probabilidad": 0.046561650931835175
+      },
+      {
+        "palabra": "y",
+        "probabilidad": 0.041402433067560196
+      },
+      {
+        "palabra": "la",
+        "probabilidad": 0.03749751299619675
+      }
+    ]
+  }
+]

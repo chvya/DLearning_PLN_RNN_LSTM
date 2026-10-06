@@ -1,0 +1,42 @@
+{
+  "rnn": {
+    "nll": {
+      "media": 4.325453560976455,
+      "desviacion_muestral": 0.004822191507988699
+    },
+    "perplejidad": {
+      "media": 75.60037992851485,
+      "desviacion_muestral": 0.3643145449925791
+    },
+    "top1": {
+      "media": 0.0723290372561448,
+      "desviacion_muestral": 0.005611374464351231
+    },
+    "top5": {
+      "media": 0.26576988989834965,
+      "desviacion_muestral": 0.0007954982216990386
+    },
+    "parametros": 346296,
+    "segundos_media": 78.17035513333303
+  },
+  "lstm": {
+    "nll": {
+      "media": 4.3585592341943,
+      "desviacion_muestral": 0.013475357880997794
+    },
+    "perplejidad": {
+      "media": 78.14918338728792,
+      "desviacion_muestral": 1.0490328515173064
+    },
+    "top1": {
+      "media": 0.06715848533934314,
+      "desviacion_muestral": 0.0034434982100419705
+    },
+    "top5": {
+      "media": 0.2614268610465526,
+      "desviacion_muestral": 0.0009031142054533425
+    },
+    "parametros": 368184,
+    "segundos_media": 107.43602373333336
+  }
+}
