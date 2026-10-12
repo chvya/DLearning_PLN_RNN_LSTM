@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Áncora · Laboratorio de lenguaje</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="#prediccion"><span class="brand-mark">á</span><span>áncora<span class="brand-sub">PREDICCIÓN DE PALABRAS</span></span></a>
+  <div class="nav-caption">MENÚ</div>
+  <nav aria-label="Secciones de la aplicación">
+    <a href="#prediccion" data-page="prediccion"><span>✧</span> Predicción <small>01</small></a>
+    <a href="#corpus" data-page="corpus"><span>▤</span> Corpus <small>02</small></a>
+    <a href="#preparacion" data-page="preparacion"><span>⇄</span> Preparación <small>03</small></a>
+    <a href="#entrenamiento" data-page="entrenamiento"><span>⌁</span> Entrenamiento <small>04</small></a>
+    <a href="#evaluacion" data-page="evaluacion"><span>▥</span> Evaluación <small>05</small></a>
+  </nav>
+  <div class="sidebar-note"><span class="live-dot"></span> Funciona en este equipo<p>Consulta los textos, los modelos y sus resultados.</p><span class="tag">RNN + LSTM</span></div>
+  <footer>ESPOCH <span> / </span> GRUPO 05<br><small>Base de Conocimiento · PLN</small></footer>
+  <button class="close-app" id="close-app">Cerrar aplicación</button>
+</aside>
+<div class="workspace">
+  <header class="topbar"><div>Grupo 5 <span>/</span> <strong>Predicción de la siguiente palabra</strong></div><div class="top-right"><span class="live-dot"></span> Sin Internet <span class="avatar">G5</span></div></header>
+  <main id="main" tabindex="-1"><div class="loading">Cargando datos y modelos…</div></main>
+  <div id="notice" role="status" aria-live="polite"></div>
+</div>
+<script src="/app.js" defer></script>
+</body></html>

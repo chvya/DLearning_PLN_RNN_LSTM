@@ -75,7 +75,9 @@ def split_document(doc):
     return 'train' if number < 80 else ('val' if number < 90 else 'test')
 
 
-def prepare(vocab_size=3000, max_train=100000):
+def prepare(vocab_size=3000, max_train=100000, progress=None):
+    report = progress or (lambda **event: None)
+    report(etapa='lectura', mensaje='Lectura, normalización y deduplicación del corpus')
     records = {'train': [], 'val': [], 'test': []}
     seen = set()
     removed = 0
@@ -87,9 +89,12 @@ def prepare(vocab_size=3000, max_train=100000):
             continue
         seen.add(signature)
         records[split_document(row['documento'])].append(row)
+        if len(seen) % 1000 == 0:
+            report(etapa='lectura', oraciones_unicas=len(seen), duplicados=removed)
     if not all(records.values()):
         raise ValueError('No hay datos suficientes; descargue primero el corpus')
     counts = Counter(w for row in records['train'] for w in row['palabras'])
+    report(etapa='vocabulario', palabras_distintas_train=len(counts), oraciones_unicas=len(seen), duplicados=removed)
     ranked = sorted(counts, key=lambda w: (-counts[w], w))
     vocab = SPECIAL + ranked[:vocab_size - len(SPECIAL)]
     index = {w: i for i, w in enumerate(vocab)}
@@ -100,6 +105,7 @@ def prepare(vocab_size=3000, max_train=100000):
                'contexto_maximo': 24, 'max_train': max_train, 'particiones': {}}
     docsets = {}
     for split, rows in records.items():
+        report(etapa='ventanas', particion=split, oraciones=len(rows), mensaje='Construyendo contextos sin información futura')
         docsets[split] = {r['documento'] for r in rows}
         examples, targets, lengths, sent_ids, positions = [], [], [], [], []
         for rid, row in enumerate(rows):
@@ -120,10 +126,12 @@ def prepare(vocab_size=3000, max_train=100000):
         summary['particiones'][split] = {'documentos': len(docsets[split]), 'oraciones': len(rows),
             'palabras_totales': len(y), 'objetivos_usados': len(chosen),
             'oov_objetivos': int((y[chosen] == UNK).sum()), 'tasa_oov': float((y[chosen] == UNK).mean())}
+        report(etapa='particion_guardada', particion=split, **summary['particiones'][split])
     assert not (docsets['train'] & docsets['val'] or docsets['train'] & docsets['test'] or docsets['val'] & docsets['test'])
     save_json(DATA / 'documentos.json', {k: sorted(v) for k, v in docsets.items()})
     summary['sin_documentos_compartidos'] = True
     save_json(DATA / 'resumen.json', summary)
+    report(etapa='completado', mensaje='Datos preparados y separación de documentos verificada')
     print(json.dumps(summary, ensure_ascii=False, indent=2))
 
 
@@ -188,7 +196,8 @@ def seed_everything(seed):
     torch.use_deterministic_algorithms(True)
 
 
-def train(kind, seed=17, context=12, epochs=5, limit=None):
+def train(kind, seed=17, context=12, epochs=5, limit=None, progress=None):
+    report = progress or (lambda **event: None)
     seed_everything(seed)
     name = f'{kind}_c{context}_s{seed}' + ('_piloto' if limit else '')
     path = MODELS / f'{name}.pt'
@@ -215,7 +224,8 @@ def train(kind, seed=17, context=12, epochs=5, limit=None):
         order = torch.randperm(len(train_data[1]))
         total_loss = 0.0
         tick = time.perf_counter()
-        for ids in order.split(512):
+        batches = order.split(512)
+        for batch_number, ids in enumerate(batches, 1):
             x, y, lengths = [a[ids] for a in train_data]
             optimizer.zero_grad(set_to_none=True)
             logits = model(x, lengths)
@@ -223,13 +233,18 @@ def train(kind, seed=17, context=12, epochs=5, limit=None):
             if not torch.isfinite(loss):
                 raise FloatingPointError('Pérdida no finita')
             loss.backward()
-            nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            gradient_norm = nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
             total_loss += loss.item() * len(y)
+            report(etapa='lote', epoca=epoch, epocas=epochs, lote=batch_number, lotes=len(batches),
+                   perdida=loss.item(), norma_gradiente_antes_recorte=float(gradient_norm),
+                   progreso=(epoch - 1 + batch_number / len(batches)) / epochs)
+        report(etapa='validacion', epoca=epoch, mensaje='Midiendo validación sin actualizar pesos')
         validation = evaluate_model(model, val_data)
         row = {'epoca': epoch, 'train_nll': total_loss / len(order), 'val': validation,
                'segundos': time.perf_counter() - tick}
         history.append(row)
+        report(etapa='epoca_completada', **row)
         if validation['nll'] < best:
             best = validation['nll']
             torch.save({'state_dict': model.state_dict(), 'config': config, 'epoch': epoch, 'vocab': vocab}, path)
@@ -353,9 +368,11 @@ def main():
     parser.add_argument('--epocas', type=int, default=5)
     parser.add_argument('--limite', type=int)
     parser.add_argument('--texto', default='el presidente del gobierno')
+    parser.add_argument('--progreso', action='store_true', help='Emitir eventos de progreso para la interfaz')
     args = parser.parse_args()
-    if args.accion == 'preparar': prepare()
-    elif args.accion == 'entrenar': train(args.modelo,args.semilla,args.contexto,args.epocas,args.limite)
+    progress = (lambda **event: print('PROGRESO ' + json.dumps(event, ensure_ascii=False), flush=True)) if args.progreso else None
+    if args.accion == 'preparar': prepare(progress=progress)
+    elif args.accion == 'entrenar': train(args.modelo,args.semilla,args.contexto,args.epocas,args.limite,progress=progress)
     elif args.accion == 'evaluar': evaluate_all()
     else: print(json.dumps(predict(args.texto), ensure_ascii=False, indent=2))
 
