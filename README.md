@@ -1,167 +1,101 @@
-# Deep learning en PLN - RNN y LSTM
+# Predicción de la siguiente palabra con RNN y LSTM
 
-**ESPOCH · Facultad de Informática y Electrónica · Ingeniería en Software**  
-**Base de Conocimiento · Séptimo semestre · Grupo 5**
+Aplicación local del grupo 5 de Base de Conocimiento (ESPOCH). Escribes una frase y ves cinco palabras que podrían seguir. También puedes revisar el corpus, la preparación de los datos, el historial de entrenamiento y los resultados de prueba.
 
-Este proyecto aplica redes neuronales recurrentes (RNN) y redes de memoria a largo y corto plazo (LSTM) para predecir la siguiente palabra de un texto en español. La práctica permite comparar cómo procesan una secuencia y qué resultados obtienen con los mismos datos.
+**La forma principal de usar el proyecto es la interfaz web local.** Los modelos ya están entrenados y vienen dentro del repositorio: no tienes que volver a entrenarlos para abrirla.
 
-**Integrantes:** Angel David Gadvay Cepeda, Walter Padilla, Jaime Morales, Jose Nieto, Bryan Lema y Max Viteri.
+## Instalación en Windows
 
-La [presentación de la investigación](presentacion/Presentacion_RNN_LSTM.pdf) contiene 12 diapositivas. El informe se entrega por separado en el aula virtual.
+Estas instrucciones se comprobaron con **Windows de 64 bits y Python 3.12**. Necesitas Internet solo para descargar el proyecto e instalar las bibliotecas. Después, la aplicación funciona en tu equipo.
 
-## Contenido del repositorio
+1. En GitHub, pulsa **Code → Download ZIP** y extrae el ZIP completo. También puedes usar `git clone https://github.com/chvya/DLearning_PLN_RNN_LSTM.git`.
+2. Abre **PowerShell dentro de la carpeta extraída**. Debes ver ahí `Abrir Ancora.vbs`, `requirements-app.txt` y las carpetas `codigo`, `datos`, `modelos` y `resultados`.
+3. Comprueba Python:
 
-| Carpeta o archivo | Para qué sirve |
+   ```powershell
+   py -3.12 --version
+   ```
+
+   Si no aparece Python 3.12, instálalo desde [python.org](https://www.python.org/downloads/) y vuelve a abrir PowerShell. Usa la versión de **64 bits**.
+
+4. Crea el entorno e instala lo necesario para la aplicación. Ejecuta cada línea desde la carpeta del proyecto:
+
+   ```powershell
+   py -3.12 -m venv .venv
+   .\.venv\Scripts\python.exe -m pip install --upgrade pip
+   .\.venv\Scripts\python.exe -m pip install -r requirements-app.txt --extra-index-url https://download.pytorch.org/whl/cpu
+   ```
+
+   Espera a que termine la instalación antes de abrir la interfaz. **No necesitas activar `.venv`** ni cambiar la política de ejecución de PowerShell: los comandos llaman directamente a su Python.
+
+5. Comprueba que los paquetes y los archivos del proyecto se pueden usar:
+
+   ```powershell
+   .\.venv\Scripts\python.exe -c "import torch, numpy; print('PyTorch:', torch.__version__, '| NumPy:', numpy.__version__)"
+   .\.venv\Scripts\python.exe -m unittest discover -s codigo -p test_*.py -v
+   ```
+
+   Al final de las pruebas debe aparecer `Ran 15 tests` y `OK`. Algunas pruebas abren un servidor **solo en tu equipo** y lo cierran al terminar.
+
+## Abrir y cerrar la interfaz
+
+Haz doble clic en **`Abrir Ancora.vbs`**. El navegador debe abrir `http://127.0.0.1:8765`. La primera carga puede tardar unos segundos mientras inicia Python.
+
+Si el navegador no se abre, entra manualmente a esa dirección. Para cerrar el servidor, pulsa **Cerrar aplicación** en el menú lateral.
+
+También puedes iniciarlo desde PowerShell, sin usar el archivo `.vbs`:
+
+```powershell
+.\.venv\Scripts\python.exe codigo/interfaz.py
+```
+
+Si lo iniciaste así, puedes detenerlo con **Ctrl+C**. Si el puerto 8765 está ocupado, usa otro:
+
+```powershell
+.\.venv\Scripts\python.exe codigo/interfaz.py --puerto 8766
+```
+
+En ese caso abre `http://127.0.0.1:8766`. El doble clic usa siempre el puerto 8765.
+
+## Qué hay en la pantalla
+
+| Sección | Qué muestra |
 |---|---|
-| `codigo/` | Preparar datos, entrenar las redes, evaluar sus resultados y ejecutar el autocompletado. Incluye las pruebas del programa. |
-| `datos/originales/` | Corpus utilizado, con su atribución y licencia. |
-| `datos/procesados/` | Vocabulario, separación de documentos y ejemplos que recibe el programa. |
-| `modelos/` | Diez modelos entrenados, listos para consultar y comparar. |
-| `resultados/` | Métricas, registros por época, ejemplos de predicción y gráficas. |
-| `presentacion/` | Diapositivas en PDF. |
-| `requirements-lock.txt` | Versiones de las bibliotecas del programa. |
+| **Predicción** | Escribe una frase, elige una RNN o LSTM y consulta cinco palabras posibles. Puedes abrir las etapas del cálculo y descargar los detalles. |
+| **Corpus** | Busca oraciones de los tres archivos originales y revisa documento, palabras e IDs. |
+| **Preparación** | Muestra cómo se limpiaron y separaron los textos y cómo se creó el vocabulario. Permite preparar una copia sin cambiar los datos originales. |
+| **Entrenamiento** | Muestra las curvas y la tabla de las cinco épocas guardadas de cada modelo. |
+| **Evaluación** | Compara el bigrama y las diez redes con las mismas oraciones de prueba. |
 
-Los datos y los modelos se incluyen para que la demostración funcione sin entrenar de nuevo. Los registros permiten comprobar las cifras de la investigación.
+Para comprobar una predicción, escribe `el presidente del gobierno`. Con la LSTM inicial, la primera sugerencia es `de`. Los porcentajes se reparten entre **todas** las entradas del vocabulario; las cinco palabras visibles no tienen que sumar 100 %.
 
-## Descargar e instalar
+La aplicación predice **una palabra completa**. No completa letras ni garantiza que una cadena de varias sugerencias forme una oración coherente. La LSTM que aparece al inicio fue elegida por su error de validación **entre las LSTM**; eso no significa que haya superado a las RNN en la prueba final.
 
-En GitHub, selecciona **Code → Download ZIP** y extrae el archivo. Si utilizas Git, puedes descargarlo así:
+## Si algo falla
 
-```powershell
-git clone https://github.com/chvya/DLearning_PLN_RNN_LSTM.git
-cd DLearning_PLN_RNN_LSTM
-```
-
-Abre PowerShell dentro de la carpeta del proyecto. Se utilizó **Python 3.12 de 64 bits en Windows**, con PyTorch para CPU; no hace falta una tarjeta gráfica dedicada.
-
-Comprueba que Python esté instalado:
-
-```powershell
-py -3.12 --version
-```
-
-Si no aparece la versión, instala Python 3.12 desde [python.org](https://www.python.org/downloads/) antes de continuar. Después ejecuta estas instrucciones, una por una:
-
-```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install torch==2.14.0+cpu --index-url https://download.pytorch.org/whl/cpu
-.\.venv\Scripts\python.exe -m pip install -r requirements-lock.txt --extra-index-url https://download.pytorch.org/whl/cpu
-```
-
-La instalación requiere Internet. Para las siguientes ejecuciones basta con usar el entorno creado; no necesitas instalar las bibliotecas cada vez. Estas instrucciones corresponden a Windows; no se ha verificado una instalación nueva en Linux o macOS.
-
-## Probar el autocompletado
-
-```powershell
-.\.venv\Scripts\python.exe codigo/demo.py
-```
-
-Cuando aparezca `Contexto>`, escribe una frase y pulsa Enter. Por ejemplo:
-
-```text
-el presidente del gobierno
-```
-
-El programa carga la LSTM seleccionada mediante validación y muestra cinco palabras posibles. En esta consulta, las sugerencias guardadas son `de`, `del`, `vasco`, `es` y `se`, con probabilidades aproximadas de 13,77 %, 7,35 %, 3,00 %, 1,97 % y 1,97 %.
-
-- Escribe `/salir` para cerrar la demostración.
-- El programa predice una palabra después del contexto; no completa letras de una palabra a medio escribir.
-- Una sugerencia no garantiza que la oración sea correcta. El vocabulario y los textos de entrenamiento limitan las respuestas.
-- Las cinco probabilidades no suman 100 % porque existen otras palabras posibles. La salida también indica la probabilidad de `UNK`, que representa palabras fuera del vocabulario.
-- La consulta funciona sin Internet y no vuelve a entrenar el modelo.
-
-Para hacer una sola consulta desde PowerShell:
-
-```powershell
-.\.venv\Scripts\python.exe codigo/pln.py predecir --texto "el presidente del gobierno"
-```
-
-## Comprobar el programa
-
-```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s codigo -p test_*.py -v
-```
-
-Se ejecutan ocho pruebas. Comprueban la normalización del texto, la separación de documentos, la construcción del contexto sin palabras futuras, el relleno de secuencias, el tratamiento de palabras desconocidas, la distribución del bigrama y la conservación del modelo al guardarlo y cargarlo. Al finalizar correctamente, la terminal muestra `OK`.
-
-| Dificultad | Revisión recomendada |
+| Lo que ocurre | Qué revisar |
 |---|---|
-| No se encuentra `codigo/demo.py` | Abre PowerShell en la carpeta principal del proyecto. |
-| No se encuentra `.venv` o falta `torch` | Completa la instalación y utiliza el ejecutable de Python indicado arriba. |
-| No hay LSTM entrenada | Comprueba que descargaste completas las carpetas `modelos/` y `resultados/`. |
-| Aparecen palabras desconocidas | Es una limitación del vocabulario. Prueba la consulta de referencia para comprobar el funcionamiento. |
+| `py -3.12` no se reconoce o no encuentra Python | Instala Python 3.12 de 64 bits desde python.org. Cierra y vuelve a abrir PowerShell. |
+| El doble clic dice que falta `.venv` | Ejecuta los comandos de instalación desde la carpeta principal, donde está `Abrir Ancora.vbs`. |
+| Aparece `No module named torch` o `No module named numpy` | La instalación de bibliotecas no terminó o se usó otro Python. Repite el comando `pip install -r requirements-app.txt ...` con `.\.venv\Scripts\python.exe` como se indica arriba. |
+| El navegador no carga | Prueba `http://127.0.0.1:8765`. Revisa `sesiones/interfaz.log` o inicia desde PowerShell para leer el error. |
+| El puerto 8765 está ocupado | Cierra otra instancia de Áncora o usa `--puerto 8766` con el comando manual. |
+| Faltan modelos, corpus o resultados | Descarga y extrae **todo** el ZIP. Debe haber diez archivos `.pt` en `modelos/` y tres `.conllu` en `datos/originales/`. |
+| Las pruebas no terminan en `OK` | Conserva el error completo y comprueba la versión de Python, la instalación de bibliotecas y que el ZIP se extrajo entero. |
 
-## Datos y configuración del experimento
+## Archivos principales
 
-Se utilizó [UD Spanish-AnCora, versión r2.17](https://github.com/UniversalDependencies/UD_Spanish-AnCora/tree/r2.17), que contiene textos periodísticos en español. Los textos se pasan a minúsculas, conservan las tildes, sustituyen números por `<num>` y omiten puntuación. Se descartaron 62 oraciones exactamente repetidas.
+- `codigo/pln.py`: prepara datos, define y entrena RNN/LSTM, evalúa y predice.
+- `codigo/interfaz.py`: servidor local que conecta los datos y modelos con el navegador.
+- `codigo/web/`: HTML, CSS y JavaScript de las cinco secciones.
+- `codigo/abrir_interfaz.py` y `Abrir Ancora.vbs`: arranque de la interfaz en Windows.
+- `datos/originales/`: corpus UD Spanish-AnCora y su licencia.
+- `datos/procesados/`: vocabulario y ejemplos numéricos de entrenamiento, validación y prueba.
+- `modelos/`: diez modelos entrenados, incluidos en la descarga.
+- `resultados/`: historiales y métricas que muestra la aplicación.
+- `requirements-app.txt`: dependencias directas para abrir la interfaz.
+- `requirements-lock.txt`: entorno completo usado para reproducir también el análisis y las figuras.
 
-La separación es propia del experimento: se agrupan las oraciones por documento y se asigna cada documento a entrenamiento, validación o prueba mediante una regla determinista basada en SHA-256. No corresponde a las particiones oficiales de evaluación de UD. El vocabulario se construye únicamente con entrenamiento.
+La versión de consola sigue disponible con `.\.venv\Scripts\python.exe codigo/demo.py`, pero no hace falta usarla para presentar la aplicación.
 
-| Elemento | Configuración |
-|---|---|
-| Vocabulario | 3 000 entradas, incluidos `PAD`, `UNK` y `BOS` |
-| Objetivos de entrenamiento | 100 000 seleccionados |
-| Objetivos de validación | 52 695 |
-| Objetivos de prueba | 56 796 |
-| Contexto de la comparación principal | Hasta 12 posiciones anteriores, incluida la señal de inicio cuando corresponda |
-| Representación de cada palabra | 48 valores |
-| Estado oculto | 64 valores |
-| Entrenamiento | 5 épocas, lotes de 512, Adam con tasa 0,003 |
-| Regularización | Dropout 0,15 y recorte de gradiente a 1,0 |
-| Semillas principales | 17, 29 y 43 para cada arquitectura |
-| Comparación adicional | Contextos de 4 y 24 posiciones, con semilla 17 |
-
-Las seis ejecuciones principales y las cuatro adicionales suman diez modelos. El piloto inicial no se incluye en este repositorio ni en las medias finales. El mejor punto de cada entrenamiento se conserva según su pérdida de validación; el conjunto de prueba no se utiliza para elegirlo.
-
-## Resultados
-
-| Modelo | Perplejidad de prueba | Acierto entre las primeras cinco palabras |
-|---|---:|---:|
-| Bigrama de referencia | 85,93 | 25,62 % |
-| RNN, media de tres semillas | 75,60 | 26,58 % |
-| LSTM, media de tres semillas | 78,15 | 26,14 % |
-
-Una perplejidad menor indica que el modelo asignó mejor probabilidad a las respuestas evaluadas; no es un porcentaje de acierto. El acierto top-5 cuenta si la palabra correcta aparece entre las cinco primeras candidatas. `UNK` interviene en la pérdida, pero no cuenta como palabra acertada.
-
-La RNN obtuvo mejores medias en esta configuración. Esto no demuestra que siempre sea mejor que LSTM. Además, el 21,19 % de los objetivos de prueba quedó fuera del vocabulario, lo que limita la cobertura. La demo utiliza la mejor LSTM según validación para mostrar el manejo de memoria estudiado en la actividad.
-
-Para verificar los datos:
-
-- `resultados/evaluacion_test.json`: resultados de cada modelo y del bigrama.
-- `resultados/resumen_comparacion.json`: medias y desviaciones de las tres semillas principales.
-- `resultados/metricas.csv`: tabla de resultados para consultar en una hoja de cálculo.
-- `resultados/*_historial.json`: evolución del entrenamiento por época.
-- `resultados/ejemplos_demo.json`: consultas y respuestas guardadas.
-
-## Repetir el experimento
-
-Para preparar los datos, ejecutar las pruebas, entrenar las diez configuraciones y generar los resultados en una carpeta nueva:
-
-```powershell
-.\.venv\Scripts\python.exe codigo/reproducir.py --destino replicas/replica_01
-```
-
-El destino no debe existir. La réplica conserva los archivos originales y tarda más que una consulta. No hace falta ejecutarla antes de cada demostración.
-
-Si solo necesitas reconstruir las tablas, gráficas y ejemplos desde los resultados existentes:
-
-```powershell
-.\.venv\Scripts\python.exe codigo/analizar.py
-```
-
-Esta orden actualiza los archivos derivados de `resultados/` y guarda las gráficas en `resultados/figuras/`. No entrena las redes. Las versiones originales de los pesos y los registros de entrenamiento se conservan.
-
-## Organización del código
-
-| Archivo | Función |
-|---|---|
-| `pln.py` | Normalización, preparación, redes RNN/LSTM, entrenamiento, bigrama, evaluación y predicción. |
-| `demo.py` | Consulta interactiva desde la terminal. |
-| `experimentos.py` | Ejecución de las diez configuraciones establecidas. |
-| `analizar.py` | Resumen de métricas y generación de tablas y figuras. |
-| `test_pln.py` | Ocho pruebas de integridad. |
-| `reproducir.py` | Repetición del procedimiento en una carpeta nueva. |
-
-## Atribución
-
-El corpus se atribuye a Taulé, Martí y Recasens y a los contribuidores de UD Spanish-AnCora. Su licencia **CC BY 4.0** se conserva en `datos/originales/LICENSE.txt`, junto con la documentación original. Los datos procesados incorporan las transformaciones descritas arriba.
+El corpus es [UD Spanish-AnCora r2.17](https://github.com/UniversalDependencies/UD_Spanish-AnCora/tree/r2.17). Su documentación y licencia están en `datos/originales/`.

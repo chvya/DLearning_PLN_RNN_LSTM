@@ -3,7 +3,7 @@ Set files = CreateObject("Scripting.FileSystemObject")
 root = files.GetParentFolderName(WScript.ScriptFullName)
 python = root & "\.venv\Scripts\pythonw.exe"
 If Not files.FileExists(python) Then
-    MsgBox "No se encontro .venv. Instala Python 3.12 y las dependencias de requirements-lock.txt.", 48, "Ancora"
+    MsgBox "No se encontro .venv. Instala Python 3.12 y las dependencias de requirements-app.txt.", 48, "Ancora"
     WScript.Quit 1
 End If
 shell.CurrentDirectory = root
